@@ -29,17 +29,8 @@
 #include <openssl/rsa.h>
 #include <openssl/pem.h>
 #include <openssl/err.h>
-
-#if defined(LIBWOLFSSL_VERSION_HEX)
-#define _HAS_WOLFSSL 1
-#endif
-
 #if defined(_WIN32)
-#if !_HAS_WOLFSSL
 #pragma comment(lib, "libcrypto.lib")
-#else
-#pragma comment(lib, "wolfssl.lib")
-#endif
 #endif
 #endif
 
@@ -675,11 +666,6 @@ std::string crypto::http::urldecode(std::string_view ciphertext)
 
 /// ----------------- rsa wrappers ---------------------------
 #if _HAS_OPENSSL
-
-#if _HAS_WOLFSSL
-#define PEM_read_RSA_PUBKEY PEM_read_RSAPublicKey
-#endif
-
 namespace crypto {
 
     namespace rsa {
@@ -726,7 +712,7 @@ namespace crypto {
                 return false;
             }
 
-            if ((bio = BIO_new_mem_buf((char*)key, length)) == NULL)
+            if ((bio = BIO_new_mem_buf(key, length)) == NULL)
             {
                 perror("BIO_new_mem_buf failed!");
                 return false;
@@ -795,16 +781,12 @@ namespace crypto {
                 flen -= (2 * SHA_DIGEST_LENGTH + 2); // pitfall: many blogs from internet said: it's 41, actually, it must be 42, phpseclib does correct.
                 break;
             case RSA_PKCS1_PADDING:
-#if !_HAS_WOLFSSL
             case RSA_SSLV23_PADDING:
-#endif
                 flen -= 11;
                 break;
-#if !_HAS_WOLFSSL
             case RSA_NO_PADDING:
                 assert(ilen % flen == 0);
                 break;
-#endif
             }
         }
 
@@ -815,14 +797,12 @@ namespace crypto {
             case RSA_PKCS1_PADDING:
                 flen -= 11;
                 break;
-#if !_HAS_WOLFSSL
             case RSA_X931_PADDING:
                 flen -= 2;
                 break;
             case RSA_NO_PADDING:
                 assert(ilen % flen == 0);
                 break;
-#endif
             };
         }
 
@@ -889,7 +869,7 @@ namespace crypto {
                     offset += grab;
                 }
                 else {
-#if defined(_DEBUG) && !_HAS_WOLFSSL
+#if defined(_DEBUG)
                     ERR_print_errors_cb(error_handler, &errormsg);
 #endif
                     break;
@@ -933,7 +913,7 @@ namespace crypto {
                     offset += flen;
                 }
                 else {
-#if defined(_DEBUG) && !_HAS_WOLFSSL
+#if defined(_DEBUG)
                     ERR_print_errors_cb(error_handler, &errormsg);
 #endif
                     break;

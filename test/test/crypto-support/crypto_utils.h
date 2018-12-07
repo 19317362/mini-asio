@@ -16,11 +16,6 @@
 
 #include "aes.h"
 
-//#ifdef __cplusplus
-// extern "C"
-//{
-//#endif
-
 /*
  * This package supports both compile-time and run-time determination of CPU
  * byte order.  If ARCH_IS_BIG_ENDIAN is defined as 0, the code will be
@@ -137,6 +132,13 @@ struct cbc_block_state
 
 namespace padding {
 
+
+/* value range: [min, limit) half closed interval */
+inline unsigned int rrand(unsigned int min, unsigned int limit)
+{
+    return (::rand() % ((limit)-(min)) + (min));
+}
+
 template <typename _ByteSeqCont>
 inline size_t PKCS7(_BYTE_SEQ_CONT &plaintext,
                     size_t blocksize = AES_BLOCK_SIZE) {
@@ -181,7 +183,7 @@ inline size_t ISO10126(_BYTE_SEQ_CONT &plaintext,
                 "ISO10126: only allow stl sequently byte conatiner!");
   size_t padding_size = blocksize - plaintext.size() % blocksize;
   for (size_t offst = 0; offst < padding_size - 1; ++offst) {
-    plaintext.push_back((char)(unsigned char)mathext::rrand(0, 256));
+    plaintext.push_back((char)(unsigned char)rrand(0, 256));
   }
   plaintext.push_back((char)padding_size);
   return padding_size;
@@ -235,7 +237,7 @@ inline _BYTE_SEQ_CONT ISO10126(size_t datasize,
   _BYTE_SEQ_CONT padding;
   size_t padding_size = blocksize - datasize % blocksize;
   for (size_t offst = 0; offst < padding_size - 1; ++offst) {
-    padding.push_back((char)(unsigned char)mathext::rrand(0, 256));
+    padding.push_back((char)(unsigned char)rrand(0, 256));
   }
   padding.push_back((char)padding_size);
   return (padding);
@@ -269,11 +271,6 @@ inline size_t ANSIX923(size_t datasize, char padding[16],
   return padding_size;
 }
 
-/* value range: [min, limit) half closed interval */
-inline unsigned int rrand(unsigned int min, unsigned int limit)
-{
-    return (::rand() % ((limit)-(min)) + (min));
-}
 inline size_t ISO10126(size_t datasize, char padding[16],
                        size_t blocksize = AES_BLOCK_SIZE) {
   size_t padding_size = blocksize - datasize % blocksize;

@@ -19,12 +19,6 @@ static const unsigned char s_default_ivec[] = { \
       0xaf, 0x80, 0xfb, 0xf1, 0x78, 0xa2, 0x56, 0x21 \
 };
 
-#define local static
-#define BAD_CAST (unsigned char*)
-#define rrand(min,max) rand() % ((max) - (min)) + (min)
-#define sz_align(d, a)     (((d) + ((a) - 1)) & ~((a) - 1))
-#define align_size(size) align((unsigned int)(size), sizeof(void*))
-
 namespace crypto {
 
 uint8_t     hex2chr(const uint8_t hex)

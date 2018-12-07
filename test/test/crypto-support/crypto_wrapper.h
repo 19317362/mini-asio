@@ -9,6 +9,8 @@
 #include <string_view>
 #include "crypto_utils.h"
 
+#define AES_DEFAULT_KEY_BITS 256
+
 namespace crypto {
 
     namespace aes {
@@ -88,7 +90,7 @@ namespace crypto {
         template<CipherMode cipherMode = CipherMode::CBC, PaddingMode paddingMode = PaddingMode::PKCS7, typename _ByteSeqCont = std::string>
         inline _BYTE_SEQ_CONT encrypt(std::string_view in, const void* key = DEFAULT_KEY, int keybits = 256, const void* ivec = nullptr)
         {
-            _BYTE_SEQ_CONT out = in;
+            _BYTE_SEQ_CONT out(in.data(), in.length());
             privacy::padding_spec<paddingMode>::perform(out);
 
             privacy::mode_spec<cipherMode>::encrypt(out.data(),
