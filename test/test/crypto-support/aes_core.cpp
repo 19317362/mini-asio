@@ -39,7 +39,8 @@
 #include <stdlib.h>
 #include "aes.h"
 
-#if !_HAS_OSSL
+#if !_HAS_OPENSSL
+
 //#ifndef HEADER_AES_LOCL_H
 //#define HEADER_AES_LOCL_H
 

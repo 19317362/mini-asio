@@ -52,21 +52,15 @@
 #ifndef HEADER_AES_SELECTOR_H
 #define HEADER_AES_SELECTOR_H
 
-//#include <openssl/opensslconf.h>
+#include "crypto_conf.h"
 
 #ifdef OPENSSL_NO_AES
 #error AES is disabled.
 #endif
 
-#if _HAS_OPENSSL
-#define _HAS_OSSL 1
-#else
-#define _HAS_OSSL 0
-#endif
-
 #define _USE_OSSL_DLL 1
 
-#if _HAS_OSSL
+#if _HAS_OPENSSL
 
 #ifdef _WIN32
   #if _USE_OSSL_DLL
@@ -114,14 +108,14 @@ Both sizes are in bytes.
 #3.AES KEY also can be 128bits or 256bits
 */
 #define AES_MAXNR 14
-
-#if _HAS_OSSL
-#include <openssl/aes.h>
-#else
 #define AES_BLOCK_SIZE 16
+
+#if _HAS_OPENSSL
 #ifdef  __cplusplus
 extern "C" {
 #endif
+#endif
+
     /* This should be a hidden type, but EVP requires that the size be known */
     struct aes_key_st {
 #ifdef AES_LONG
@@ -184,6 +178,7 @@ extern "C" {
     //		unsigned char *out,
     //		const unsigned char *in, unsigned int inlen);
 
+#if _HAS_OPENSSL
 #ifdef  __cplusplus
 }
 #endif
